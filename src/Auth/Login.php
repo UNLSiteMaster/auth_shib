@@ -49,12 +49,18 @@ class Login implements ViewableInterface
             throw new UnexpectedValueException('Missing the auth_shib user environment variable');
         }
 
+        $parts = explode('@', $_SERVER['REMOTE_USER']);
+
+        if (count($parts) !== 2) {
+            throw new UnexpectedValueException('Invalid username. Please make sure your institution is sending a valid EPPN value.');
+        }
+        
         //Try to get the user record if it exsists
-        $user = User::getByUIDAndProvider($_SERVER['REMOTE_USER'], $this->plugin->getProviderMachineName());
+        $user = User::getByUIDAndProvider($parts[0], $parts[1]);
         
         if (!$user) {
             //Return the user
-            $user = User::createUser($_SERVER['REMOTE_USER'], $this->plugin->getProviderMachineName());
+            $user = User::createUser($parts[0], $parts[1]);
         }
         
         //Update email if we need to
@@ -80,7 +86,7 @@ class Login implements ViewableInterface
         $user->save();
         
         //Log the user in
-        Session::logIn($user);
+        Session::logIn($user, $this->plugin->getProviderMachineName());
 
         if (isset($_GET['r'])) {
             //redirect if we need to
