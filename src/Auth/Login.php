@@ -46,7 +46,7 @@ class Login implements ViewableInterface
     protected function handleCallback()
     {
         if (!isset($_SERVER['REMOTE_USER']) || empty($_SERVER['REMOTE_USER'])) {
-            throw new UnexpectedValueException('Missing the auth_shib user environment variable');
+            throw new UnexpectedValueException('Sorry, we are unable to uniquely identify you. Please verify that your institution is releasing your eduPersonPrincipalName attribute to us.');
         }
 
         $parts = explode('@', $_SERVER['REMOTE_USER']);
